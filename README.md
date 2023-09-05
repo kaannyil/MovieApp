@@ -1,2 +1,2 @@
 # MovieApp
-I tried Movie API on this project.
+I tried Movie API with MVVM architecture on this project.
