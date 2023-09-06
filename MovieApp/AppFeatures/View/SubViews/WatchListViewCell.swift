@@ -20,7 +20,7 @@ class WatchListViewCell: UICollectionViewCell {
                                   numberLines: 1)
     let genreLabel = MyLabel(color: .white, fontSettings: .boldSystemFont(ofSize: 16),
                              numberLines: 1)
-    let yearLabel = MyLabel(color: .white, fontSettings: .boldSystemFont(ofSize: 16),
+    let releaseLabel = MyLabel(color: .white, fontSettings: .boldSystemFont(ofSize: 16),
                             numberLines: 1)
     let filmLengthLabel = MyLabel(color: .white, fontSettings: .boldSystemFont(ofSize: 16),
                                   numberLines: 1)
@@ -40,14 +40,14 @@ class WatchListViewCell: UICollectionViewCell {
         contentView.addSubview(nameLabel)
         contentView.addSubview(ratingStarLabel)
         contentView.addSubview(genreLabel)
-        contentView.addSubview(yearLabel)
+        contentView.addSubview(releaseLabel)
         contentView.addSubview(filmLengthLabel)
         
         makeImageConst()
         makeNameConst()
         makeRatingStarConst()
         makeGenreConst()
-        makeYearConst()
+        makeReleaseConst()
         makeFilmLengthConst()
     }
     
@@ -56,7 +56,7 @@ class WatchListViewCell: UICollectionViewCell {
         nameLabel.text = "Test Film Name and Id:  \(indexpath.item + 1)"
         ratingStarLabel.text = "Rating: 9.2"
         genreLabel.text = "Genre: Action"
-        yearLabel.text = "Year: 201\(indexpath.item)"
+        releaseLabel.text = "Release: 201\(indexpath.item)"
         filmLengthLabel.text = "Minutes: 13\(indexpath.item)"
         
     }
@@ -92,12 +92,12 @@ extension WatchListViewCell {
         genreLabel.snp.makeConstraints { make in
             make.leading.equalTo(imageView.snp.trailing).offset(10)
             make.trailing.equalToSuperview().offset(-5)
-            make.bottom.equalTo(yearLabel.snp.top).offset(-5)
+            make.bottom.equalTo(releaseLabel.snp.top).offset(-5)
         }
     }
     
-    private func makeYearConst() {
-        yearLabel.snp.makeConstraints { make in
+    private func makeReleaseConst() {
+        releaseLabel.snp.makeConstraints { make in
             make.leading.equalTo(imageView.snp.trailing).offset(10)
             make.trailing.equalToSuperview().offset(-5)
             make.bottom.equalTo(filmLengthLabel.snp.top).offset(-5)
