@@ -43,6 +43,11 @@ class WatchListView: UIViewController {
         viewModel.view = self
         viewModel.viewDidLoad()
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        viewModel.viewDidAppear()
+        super.viewDidAppear(animated)
+    }
 }
 
 // MARK: - Watch List View Interfaces
@@ -66,7 +71,8 @@ extension WatchListView: WatchListViewInterfaces {
 // MARK: - CollectionView
 extension WatchListView: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 5
+        // return 5
+        return  viewModel.favArr.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -74,13 +80,16 @@ extension WatchListView: UICollectionViewDelegate, UICollectionViewDataSource {
                                                             for: indexPath) as? WatchListViewCell else {
             return UICollectionViewCell()
         }
-        
-        cell.configCell(indexPath)
+        let data = viewModel.favArr[indexPath.item]
+        cell.configCell(movieDetail: data, isFavedMovie: true)
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        viewModel.didSelectItemAt()
+        print("WatchList Clicked")
+        let id = viewModel.favArr[indexPath.item].id
+        viewModel.segueToDetails(movieID: id)
+        // viewModel.didSelectItemAt()
     }
 }
 

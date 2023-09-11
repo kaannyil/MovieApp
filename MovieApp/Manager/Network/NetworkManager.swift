@@ -22,7 +22,6 @@ class NetworkManager {
                 completion(.failure(.responseError))
                 return
             }
-            print(response.statusCode)
             
             guard let data = data else {
                 completion(.failure(.noData))
@@ -34,6 +33,7 @@ class NetworkManager {
             }
             
         }
+        
         task.resume()
     }
     
@@ -55,7 +55,7 @@ extension NetworkManager {
         request(endPoint, completion: completion)
     }
     
-    func getMovieData(id: Int, page: String, completion: @escaping (Result<MovieData, ErrorTypes>) -> Void) {
+    func getDetailData(id: Int, page: String, completion: @escaping (Result<MovieDetail, ErrorTypes>) -> Void) {
         let endPoint = EndPoint.getDetailData(id: id, page: page)
         
         request(endPoint, completion: completion)

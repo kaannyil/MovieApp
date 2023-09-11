@@ -11,10 +11,19 @@ protocol HomeViewInterfaces {
     func prepare()
 }
 
+protocol HomeViewOutPut: AnyObject {
+    func saveMovies(movieType: MovieTypes, list: [MovieInfo])
+}
+
 class HomeView: UIViewController {
     
     var viewModel = HomeViewModel()
     
+    var collectionCells = [CellItem]()
+    
+    var topRatedMovieList: [MovieInfo] = []
+    var popularMovieList: [MovieInfo] = []
+
     let titleAttributes: [NSAttributedString.Key: Any] = [
         .foregroundColor: UIColor.white,
         .font: UIFont.boldSystemFont(ofSize: 18)
@@ -32,11 +41,12 @@ class HomeView: UIViewController {
     
     let topRatedCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
         layout.scrollDirection = .horizontal
         let sizeHeight = UIScreen.main.bounds.height
         layout.itemSize = CGSize(width: sizeHeight/5.8, height: sizeHeight/4)
-        layout.minimumLineSpacing = 30
-        layout.minimumInteritemSpacing = 5
+        layout.minimumLineSpacing = 40
+        layout.minimumInteritemSpacing = 10
         
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collection.translatesAutoresizingMaskIntoConstraints = false
@@ -48,11 +58,13 @@ class HomeView: UIViewController {
         return collection
     }()
     
-    private let popularLabel = MyLabel(color: .white, fontSettings: .boldSystemFont(ofSize: 20),
+    private let popularLabel = MyLabel(color: .white,
+                                       fontSettings: .boldSystemFont(ofSize: 20),
                                        numberLines: 1)
     
-    let filmsCollectionView: UICollectionView = {
+    let popularCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 20, right: 0)
         layout.scrollDirection = .vertical
         let sizeWidth = UIScreen.main.bounds.width
         let cellWidth = (sizeWidth - 70) / 3
@@ -74,7 +86,14 @@ class HomeView: UIViewController {
         super.viewDidLoad()
         
         viewModel.view = self
+        viewModel.homeViewOutPut = self
+        viewModel.fetchData()
         viewModel.viewDidLoad()
+    }
+    
+    func configureCells() {
+        collectionCells = [CellItem(cellType: .topRatedMovies, movieList: topRatedMovieList),
+                           CellItem(cellType: .popularMovies, movieList: popularMovieList)]
     }
 }
 // MARK: - Home View Interfaces
@@ -84,7 +103,7 @@ extension HomeView: HomeViewInterfaces {
         view.addSubview(topRatedLabel)
         view.addSubview(topRatedCollectionView)
         view.addSubview(popularLabel)
-        view.addSubview(filmsCollectionView)
+        view.addSubview(popularCollectionView)
         
         makeSearchBarConst()
         makeTopRatedLabelConst()
@@ -114,8 +133,24 @@ extension HomeView {
     private func delegates() {
         topRatedCollectionView.dataSource = self
         topRatedCollectionView.delegate = self
-        filmsCollectionView.dataSource = self
-        filmsCollectionView.delegate = self
+        popularCollectionView.dataSource = self
+        popularCollectionView.delegate = self
+    }
+}
+
+// MARK: - View Model OutPut
+extension HomeView: HomeViewOutPut {
+    func saveMovies(movieType: MovieTypes, list: [MovieInfo]) {
+        
+        switch movieType {
+        case .topRatedMovies:
+            topRatedMovieList = list
+        case .popularMovies:
+            popularMovieList = list
+        }
+        configureCells()
+        topRatedCollectionView.reloadData()
+        popularCollectionView.reloadData()
     }
 }
 
@@ -125,35 +160,68 @@ extension HomeView: UICollectionViewDataSource, UICollectionViewDelegate {
         var returnValue = 0
         
         if collectionView == topRatedCollectionView {
-            returnValue = 10
-        } else if collectionView == filmsCollectionView {
-            returnValue = 20
+            returnValue = topRatedMovieList.count
+        } else if collectionView == popularCollectionView {
+            returnValue = popularMovieList.count
         }
         
         return returnValue
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        /* let section = collectionCells[indexPath.section]
+        
+        switch section.cellType {
+        case .topRatedMovies:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TopRatedViewCell.identifier, for: indexPath) as! TopRatedViewCell
+            
+            let movie = self.topRatedMovieList[indexPath.item]
+            cell.configCell(movie: movie, indexPath)
+            return cell
+            
+        case .popularMovies:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FilmsViewCell.identifier, for: indexPath) as! FilmsViewCell
+            
+            let movie = self.popularMovieList[indexPath.item]
+            cell.configCell(movie: movie)
+            return cell
+        } */
+        
         if collectionView == topRatedCollectionView {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TopRatedViewCell.identifier,
                                                                 for: indexPath) as? TopRatedViewCell else {
                 return UICollectionViewCell()
             }
-            cell.configCell(indexPath)
+            
+            let movie = topRatedMovieList[indexPath.item]
+            cell.configCell(movie: movie, indexPath)
             return cell
-        } else if collectionView == filmsCollectionView {
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FilmsViewCell.identifier,
-                                                                for: indexPath) as? FilmsViewCell else {
+            
+        } else if collectionView == popularCollectionView {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FilmsViewCell.identifier, for: indexPath) as? FilmsViewCell else {
                 return UICollectionViewCell()
             }
-            cell.configCell(indexPath)
+             
+            let movie = popularMovieList[indexPath.item]
+            cell.configCell(movie: movie)
             return cell
+            
         }
         return UICollectionViewCell()
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        viewModel.didSelectItemAt()
+        if collectionView == topRatedCollectionView {
+            print("top Rated Clicked")
+            let id = topRatedMovieList[indexPath.item].id
+            viewModel.segueToDetails(movieID: id)
+            
+        } else if collectionView == popularCollectionView {
+            print("Popular Clicked")
+            let id = popularMovieList[indexPath.item].id
+            viewModel.segueToDetails(movieID: id)
+        }
     }
 }
 
@@ -213,12 +281,12 @@ extension HomeView {
             make.leading.equalTo(view.safeAreaLayoutGuide.snp.leading).offset(20)
             make.trailing.equalTo(view.safeAreaLayoutGuide.snp.trailing).offset(-20)
             make.top.equalTo(topRatedCollectionView.snp.bottom).offset(10)
-            make.bottom.equalTo(filmsCollectionView.snp.top).offset(-10)
+            make.bottom.equalTo(popularCollectionView.snp.top).offset(-10)
         }
     }
     
     private func makeFilmsConst() {
-        filmsCollectionView.snp.makeConstraints { make in
+        popularCollectionView.snp.makeConstraints { make in
             make.leading.equalTo(view.safeAreaLayoutGuide.snp.leading).offset(20)
             make.trailing.equalTo(view.safeAreaLayoutGuide.snp.trailing).offset(-20)
             make.top.equalTo(popularLabel.snp.bottom).offset(10)

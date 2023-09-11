@@ -15,7 +15,8 @@ protocol DetailsViewInterfaces {
 class DetailsView: UIViewController {
     
     var viewModel = DetailsViewModel()
-    var isFaved = false
+    // var movieDetail: MovieDetail?
+    var isFaved: Bool?
 
     let backGroundImage: UIImageView = {
         let imageView = UIImageView()
@@ -31,7 +32,7 @@ class DetailsView: UIViewController {
                             numberLines: 2)
     private let aboutMovieLabel = MyLabel(color: .white, fontSettings: .boldSystemFont(ofSize: 18),
                                           numberLines: 1)
-    let aboutMovieDetailLabel = MyLabel(color: .white, fontSettings: UIFont(font: .helvetica, size: 15)!,
+    let aboutMovieDetailLabel = MyLabel(color: .white, fontSettings: UIFont(font: .helvetica, size: 16)!,
                                         numberLines: 0)
     
     override func viewDidLoad() {
@@ -39,6 +40,7 @@ class DetailsView: UIViewController {
     
         viewModel.view = self
         viewModel.viewDidLoad()
+        configValues()
     }
 }
 
@@ -57,7 +59,7 @@ extension DetailsView: DetailsViewInterfaces {
         makeAbotMovieLabelConst()
         makeAboutMovieDetailLabelConst()
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "bookmark"), style: .done, target: self, action: #selector(buttonTapped))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "bookmark"), style: .done, target: self, action: #selector(saveToCoreData))
         
         title = "Details"
         view.backgroundColor = UIColor(named: "system_background_color")
@@ -66,9 +68,22 @@ extension DetailsView: DetailsViewInterfaces {
         foreGroundImage.layer.borderWidth = 2
         foreGroundImage.layer.borderColor = UIColor(named: "system_blue")?.cgColor
         
+        
         aboutMovieLabel.text = "About Movie"
         
         aboutMovieDetailLabel.sizeToFit()
+    }
+}
+
+// MARK: - Values Of Page
+extension DetailsView {
+    func configValues() {
+        if let movieDetail = viewModel.model {
+            backGroundImage.imageFromUrl(urlString: movieDetail.backDropPath, placeHolderImage: UIImage())
+            foreGroundImage.uploadImage(posterPath: movieDetail.posterPath)
+            nameLabel.text = movieDetail.title
+            aboutMovieDetailLabel.text = movieDetail.overview
+        }
     }
 }
 
@@ -77,19 +92,38 @@ extension DetailsView {
     func changeFavButtonImage(bool: Bool) {
         if bool == true {
             isFaved = bool
-            navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "bookmark.fill"), style: .done, target: self, action: #selector(buttonTapped))
+            navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "bookmark.fill"), style: .done, target: self, action: #selector(saveToCoreData))
             print("Fav Button Active.")
         } else {
             isFaved = bool
-            navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "bookmark"), style: .done, target: self, action: #selector(buttonTapped))
+            navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "bookmark"), style: .done, target: self, action: #selector(saveToCoreData))
             print("Fav Button Deactive.")
         }
     }
-    
-    @objc private func buttonTapped() {
+}
+
+// MARK: - Core Data Interaction
+extension DetailsView {
+    @objc private func saveToCoreData() {
+        guard let data = viewModel.model else {
+            print("Data is Broken")
+            return
+        }
         if isFaved == false {
+            print("Fav false")
+            CoreDataManager.shared.saveData(model: MovieDetail(id: data.id,
+                                                               backDropPath: data.backDropPath,
+                                                               posterPath: data.posterPath,
+                                                               title: data.title,
+                                                               voteAverage: data.voteAverage,
+                                                               releaseDate: data.releaseDate,
+                                                               genres: data.genres,
+                                                               runtime: data.runtime,
+                                                               overview: data.overview))
             changeFavButtonImage(bool: true)
         } else {
+            print("Fav true")
+            CoreDataManager.shared.deleteCoreData(with: data.id)
             changeFavButtonImage(bool: false)
         }
     }

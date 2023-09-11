@@ -22,11 +22,13 @@ struct MovieData: Codable {
 
 struct MovieInfo: Codable {
     let id: Int
+    let posterPath: String
     let genreIDs: [Int]
     let title: String
     
     enum CodingKeys: String, CodingKey {
         case id
+        case posterPath = "poster_path"
         case genreIDs = "genre_ids"
         case title
     }

@@ -11,7 +11,6 @@ class WatchListViewCell: UICollectionViewCell {
     static let identifier = "WatchListViewCell"
     
     let imageView = MyImage(frame: .zero)
-    
     let nameLabel = MyLabel(color: .white,
                             fontSettings: .boldSystemFont(ofSize: 22),
                             numberLines: 1)
@@ -35,7 +34,7 @@ class WatchListViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure() {
+    private func configure() {
         contentView.addSubview(imageView)
         contentView.addSubview(nameLabel)
         contentView.addSubview(ratingStarLabel)
@@ -51,14 +50,18 @@ class WatchListViewCell: UICollectionViewCell {
         makeFilmLengthConst()
     }
     
-    public func configCell(_ indexpath: IndexPath) {
-        imageView.image = UIImage(named: "movie")
-        nameLabel.text = "Test Film Name and Id:  \(indexpath.item + 1)"
-        ratingStarLabel.text = "Rating: 9.2"
-        genreLabel.text = "Genre: Action"
-        releaseLabel.text = "Release: 201\(indexpath.item)"
-        filmLengthLabel.text = "Minutes: 13\(indexpath.item)"
+    public func configCell(movieDetail: MovieDetail, isFavedMovie: Bool) {
         
+        let genres = movieDetail.genres
+        imageView.uploadImage(posterPath: movieDetail.posterPath)
+        nameLabel.text = movieDetail.title
+        ratingStarLabel.text = "Rating : \(String(format: "%0.1f", movieDetail.voteAverage))"
+        
+        if !genres.isEmpty { genreLabel.text = "Genre: \(genres[0].name)" }
+        
+        print(movieDetail.genres)
+        releaseLabel.text = "Release Date: \(movieDetail.releaseDate)"
+        filmLengthLabel.text = "Minutes: \(String(movieDetail.runtime))"
     }
 }
 

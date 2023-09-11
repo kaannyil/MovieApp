@@ -13,6 +13,8 @@ protocol DetailsViewModelInterfaces {
 }
 
 class DetailsViewModel: DetailsViewModelInterfaces {
+    
+    var model: MovieDetail?
     var view: DetailsView?
     
     func viewDidLoad() {

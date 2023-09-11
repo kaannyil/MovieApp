@@ -38,7 +38,7 @@ class TopRatedViewCell: UICollectionViewCell {
             NSAttributedString.Key.strikethroughColor : UIColor(named: "system_background_color")!,
             NSAttributedString.Key.strokeColor : UIColor(named: "system_blue")!,
             NSAttributedString.Key.foregroundColor : UIColor(named: "system_background_color")!,
-            NSAttributedString.Key.strokeWidth : -1.5,
+            NSAttributedString.Key.strokeWidth : -2,
             NSAttributedString.Key.font : UIFont(font: .helveticaBold, size: 80)!]
         as [NSAttributedString.Key : Any]
 
@@ -46,9 +46,10 @@ class TopRatedViewCell: UICollectionViewCell {
                                                                attributes: strokeTextAttributes)
     }
     
-    public func configCell(_ indexpath: IndexPath) {
+    public func configCell(movie: MovieInfo, _ indexpath: IndexPath) {
         configNumberLabel(itemIndex: String(indexpath.item + 1))
-        imageView.image = UIImage(named: "movie")
+        // imageView.image = UIImage(named: "movie")
+        imageView.uploadImage(posterPath: movie.posterPath)
     }
 }
 
@@ -62,7 +63,7 @@ extension TopRatedViewCell {
     
     private func numberLabelConst() {
         numberLabel.snp.makeConstraints { make in
-            make.leading.equalTo(contentView.safeAreaLayoutGuide.snp.leading)
+            make.centerX.equalTo(contentView.safeAreaLayoutGuide.snp.leading)
             make.bottom.equalTo(contentView.safeAreaLayoutGuide.snp.bottom).offset(15)
         }
     }

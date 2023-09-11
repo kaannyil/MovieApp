@@ -27,8 +27,9 @@ class FilmsViewCell: UICollectionViewCell {
         imageViewConst()
     }
     
-    public func configCell(_ indexpath: IndexPath) {
-        imageView.image = UIImage(named: "movie2")
+    public func configCell(movie: MovieInfo) {
+        // imageView.image = UIImage(named: "movie")
+        imageView.uploadImage(posterPath: movie.posterPath)
     }
 }
 

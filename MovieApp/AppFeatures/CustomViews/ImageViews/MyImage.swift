@@ -22,7 +22,7 @@ class MyImage: UIImageView {
         super.init(frame: .zero)
         translatesAutoresizingMaskIntoConstraints = false
         clipsToBounds = true
-        contentMode = .scaleAspectFill
+        contentMode = .scaleToFill
     }
     
     private func configure() {
@@ -30,6 +30,10 @@ class MyImage: UIImageView {
         clipsToBounds = true
         layer.cornerRadius = 20
         layer.masksToBounds = true
-        contentMode = .scaleAspectFill
+        contentMode = .scaleToFill
+    }
+    
+    func uploadImage(posterPath: String) {
+        imageFromUrl(urlString: posterPath, placeHolderImage: UIImage())
     }
 }
