@@ -59,7 +59,6 @@ class WatchListViewCell: UICollectionViewCell {
         
         if !genres.isEmpty { genreLabel.text = "Genre: \(genres[0].name)" }
         
-        print(movieDetail.genres)
         releaseLabel.text = "Release Date: \(movieDetail.releaseDate)"
         filmLengthLabel.text = "Minutes: \(String(movieDetail.runtime))"
     }

@@ -213,12 +213,10 @@ extension HomeView: UICollectionViewDataSource, UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == topRatedCollectionView {
-            print("top Rated Clicked")
             let id = topRatedMovieList[indexPath.item].id
             viewModel.segueToDetails(movieID: id)
             
         } else if collectionView == popularCollectionView {
-            print("Popular Clicked")
             let id = popularMovieList[indexPath.item].id
             viewModel.segueToDetails(movieID: id)
         }

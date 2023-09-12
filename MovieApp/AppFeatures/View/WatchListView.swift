@@ -86,7 +86,6 @@ extension WatchListView: UICollectionViewDelegate, UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("WatchList Clicked")
         let id = viewModel.favArr[indexPath.item].id
         viewModel.segueToDetails(movieID: id)
         // viewModel.didSelectItemAt()

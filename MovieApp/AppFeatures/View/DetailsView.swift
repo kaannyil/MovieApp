@@ -40,7 +40,18 @@ class DetailsView: UIViewController {
     
         viewModel.view = self
         viewModel.viewDidLoad()
-        configValues()
+        
+        viewModel.fetchWatchListData()
+        
+        configValues(isFavedMovie: false)
+        
+        viewModel.favIdArr.forEach { id in
+            if let movieDetail = viewModel.model {
+                if id == movieDetail.id {
+                    configValues(isFavedMovie: true)
+                }
+            }
+        }
     }
 }
 
@@ -77,12 +88,13 @@ extension DetailsView: DetailsViewInterfaces {
 
 // MARK: - Values Of Page
 extension DetailsView {
-    func configValues() {
+    func configValues(isFavedMovie: Bool) {
         if let movieDetail = viewModel.model {
             backGroundImage.imageFromUrl(urlString: movieDetail.backDropPath, placeHolderImage: UIImage())
             foreGroundImage.uploadImage(posterPath: movieDetail.posterPath)
             nameLabel.text = movieDetail.title
             aboutMovieDetailLabel.text = movieDetail.overview
+            changeFavButtonImage(bool: isFavedMovie)
         }
     }
 }
@@ -93,11 +105,11 @@ extension DetailsView {
         if bool == true {
             isFaved = bool
             navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "bookmark.fill"), style: .done, target: self, action: #selector(saveToCoreData))
-            print("Fav Button Active.")
+            // print("Fav Button Active.")
         } else {
             isFaved = bool
             navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "bookmark"), style: .done, target: self, action: #selector(saveToCoreData))
-            print("Fav Button Deactive.")
+            // print("Fav Button Deactive.")
         }
     }
 }
@@ -110,7 +122,6 @@ extension DetailsView {
             return
         }
         if isFaved == false {
-            print("Fav false")
             CoreDataManager.shared.saveData(model: MovieDetail(id: data.id,
                                                                backDropPath: data.backDropPath,
                                                                posterPath: data.posterPath,
@@ -122,7 +133,6 @@ extension DetailsView {
                                                                overview: data.overview))
             changeFavButtonImage(bool: true)
         } else {
-            print("Fav true")
             CoreDataManager.shared.deleteCoreData(with: data.id)
             changeFavButtonImage(bool: false)
         }
