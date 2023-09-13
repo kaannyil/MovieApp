@@ -9,7 +9,7 @@ import Foundation
 
 
 struct MovieData: Codable {
-    let page: Int
+    var page: Int
     let results: [MovieInfo]
     let totalPages, totalResults: Int
     

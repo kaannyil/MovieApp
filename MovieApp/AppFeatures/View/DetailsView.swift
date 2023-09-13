@@ -44,7 +44,6 @@ class DetailsView: UIViewController {
         viewModel.fetchWatchListData()
         
         configValues(isFavedMovie: false)
-        
         viewModel.favIdArr.forEach { id in
             if let movieDetail = viewModel.model {
                 if id == movieDetail.id {

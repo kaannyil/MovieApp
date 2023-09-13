@@ -23,6 +23,10 @@ class HomeView: UIViewController {
     
     var topRatedMovieList: [MovieInfo] = []
     var popularMovieList: [MovieInfo] = []
+    var resultSearch: [MovieInfo] = []
+    var resetMovieList: [MovieInfo] = []
+    
+    private var isSearching = false
 
     let titleAttributes: [NSAttributedString.Key: Any] = [
         .foregroundColor: UIColor.white,
@@ -32,11 +36,11 @@ class HomeView: UIViewController {
     private let searchBar: UISearchBar = {
         let searchBar = UISearchBar()
         searchBar.backgroundImage = UIImage()
-        searchBar.placeholder = "Search Movie"
         return searchBar
     }()
     
-    private let topRatedLabel = MyLabel(color: .white, fontSettings: .boldSystemFont(ofSize: 23),
+    private let topRatedLabel = MyLabel(color: .white,
+                                        fontSettings: .boldSystemFont(ofSize: 23),
                                         numberLines: 1)
     
     let topRatedCollectionView: UICollectionView = {
@@ -92,8 +96,10 @@ class HomeView: UIViewController {
     }
     
     func configureCells() {
-        collectionCells = [CellItem(cellType: .topRatedMovies, movieList: topRatedMovieList),
-                           CellItem(cellType: .popularMovies, movieList: popularMovieList)]
+        collectionCells = [CellItem(cellType: .topRatedMovies,
+                                    movieList: topRatedMovieList),
+                           CellItem(cellType: .popularMovies,
+                                    movieList: popularMovieList)]
     }
 }
 // MARK: - Home View Interfaces
@@ -120,6 +126,14 @@ extension HomeView: HomeViewInterfaces {
         view.backgroundColor = UIColor(named: "system_background_color")
         navigationController?.navigationBar.titleTextAttributes = titleAttributes
         
+        // Search Bar PlaceHolder Color
+        searchBar.searchTextField.attributedPlaceholder =
+        NSAttributedString.init(string: "Search Movie",
+                            attributes: [NSAttributedString.Key.foregroundColor:UIColor.lightGray])
+        // Search Bar Left Search Icon Color
+        searchBar.searchTextField.leftView?.tintColor = .lightGray
+        searchBar.searchTextField.backgroundColor = UIColor(named: "searchBar_background_color")
+        searchBar.searchTextField.textColor = .white
         topRatedLabel.text = "Top Rated Movies"
         popularLabel.text = "Popular Movies"
         popularLabel.textColor = .white
@@ -135,6 +149,7 @@ extension HomeView {
         topRatedCollectionView.delegate = self
         popularCollectionView.dataSource = self
         popularCollectionView.delegate = self
+        searchBar.delegate = self
     }
 }
 
@@ -151,24 +166,32 @@ extension HomeView: HomeViewOutPut {
         configureCells()
         topRatedCollectionView.reloadData()
         popularCollectionView.reloadData()
+        
+        resetMovieList = popularMovieList
     }
 }
 
 // MARK: - CollectionView
 extension HomeView: UICollectionViewDataSource, UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView,
+                        numberOfItemsInSection section: Int) -> Int {
         var returnValue = 0
         
         if collectionView == topRatedCollectionView {
             returnValue = topRatedMovieList.count
         } else if collectionView == popularCollectionView {
-            returnValue = popularMovieList.count
+            
+            if isSearching {
+                returnValue = resultSearch.count
+            } else {
+                returnValue = popularMovieList.count
+            }
         }
-        
         return returnValue
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView,
+                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         /* let section = collectionCells[indexPath.section]
         
@@ -199,11 +222,20 @@ extension HomeView: UICollectionViewDataSource, UICollectionViewDelegate {
             return cell
             
         } else if collectionView == popularCollectionView {
+            
+            let movie: MovieInfo
+            
+            if isSearching {
+                movie = resultSearch[indexPath.item]
+            } else {
+                movie = popularMovieList[indexPath.item]
+            }
+            
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FilmsViewCell.identifier, for: indexPath) as? FilmsViewCell else {
                 return UICollectionViewCell()
             }
              
-            let movie = popularMovieList[indexPath.item]
+            // let movie = popularMovieList[indexPath.item]
             cell.configCell(movie: movie)
             return cell
             
@@ -217,8 +249,36 @@ extension HomeView: UICollectionViewDataSource, UICollectionViewDelegate {
             viewModel.segueToDetails(movieID: id)
             
         } else if collectionView == popularCollectionView {
-            let id = popularMovieList[indexPath.item].id
-            viewModel.segueToDetails(movieID: id)
+            if isSearching {
+                let id = resultSearch[indexPath.item].id
+                viewModel.segueToDetails(movieID: id)
+            } else {
+                let id = popularMovieList[indexPath.item].id
+                viewModel.segueToDetails(movieID: id)
+            }
+        }
+    }
+}
+
+// MARK: - Search Bar Delegate
+extension HomeView: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        // print("Result Search: \(searchText)")
+        
+        if searchText == "" {
+            isSearching = false
+        } else {
+            isSearching = true
+            
+            resultSearch = popularMovieList.filter { result in
+                let containSearchText =
+                result.title.lowercased().contains(searchText.lowercased())
+                return containSearchText
+            }
+            // print(resultSearch.count)
+        }
+        DispatchQueue.main.async {
+            self.popularCollectionView.reloadData()
         }
     }
 }
@@ -226,22 +286,79 @@ extension HomeView: UICollectionViewDataSource, UICollectionViewDelegate {
 // MARK: - Filter Button
 extension HomeView {
     @objc private func filterButtonTapped() {
-        let genreArray = ["Action", "Comedy", "Dram", "Reset"]
+        var networkGenreArray: [String] = []
+        
+        if let genreArray = viewModel.genreModel?.genres {
+            for genre in genreArray {
+                if let name = genre.name {
+                    networkGenreArray.append(name)
+                }
+            }
+        }
         
         let alertController = UIAlertController(title: "Choose Movie Genre",
                                                 message: nil,
                                                 preferredStyle: .actionSheet)
         
-        for genre in genreArray {
-            let action = UIAlertAction(title: genre, style: .default)
-            print(genre)
-            alertController.addAction(action)
+        if isSearching {
+            
+        } else {
+            for (index, genre) in networkGenreArray.enumerated() {
+                let action = UIAlertAction(title: genre, style: .default) { _ in
+                    self.navigationItem.rightBarButtonItem =
+                    UIBarButtonItem(title: "\(genre)",
+                                    style:  .done,
+                                    target: self,
+                                    action: #selector(self.filterButtonTapped))
+                    
+                    self.popularMovieList = self.resetMovieList
+                    // self.resultSearch = self.resetMovieList
+                    
+                    if let genreArray = self.viewModel.genreModel?.genres {
+                        let filterMovies = self.filterMoviesByGenre(
+                            genreID: genreArray[index].id ?? 0)
+                        
+                        self.popularMovieList = filterMovies
+                        self.resultSearch = filterMovies
+                        
+                        print(genreArray[index].id!)
+                        
+                        DispatchQueue.main.async {
+                            self.popularCollectionView.reloadData()
+                        }
+                    }
+                }
+                
+                alertController.addAction(action)
+            }
+            
+            let resetAction = UIAlertAction(title: "Reset", style: .cancel) { _ in
+                self.navigationItem.rightBarButtonItem =
+                UIBarButtonItem(title: "Filter",
+                                style: .done,
+                                target: self,
+                                action: #selector(self.filterButtonTapped))
+                self.resetMoviesByGenre()
+            }
+            
+            alertController.addAction(resetAction)
         }
         
-        let cancelAction = UIAlertAction(title: "Cancel", style: .destructive,
-                                         handler: nil)
+        let cancelAction = UIAlertAction(title: "Cancel", style: .destructive)
+    
         alertController.addAction(cancelAction)
         present(alertController, animated: true, completion: nil)
+    }
+    
+    func filterMoviesByGenre(genreID: Int) -> [MovieInfo]{
+        return popularMovieList.filter { $0.genreIDs[0] == genreID}
+    }
+    func resetMoviesByGenre() {
+        popularMovieList = resetMovieList
+        
+        DispatchQueue.main.async {
+            self.popularCollectionView.reloadData()
+        }
     }
 }
 

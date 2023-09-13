@@ -35,11 +35,12 @@ enum HTTPMethod: String {
 enum EndPoint {
     case getMovieData(MovieType: String, page: String)
     case getDetailData(id: Int, page: String)
+    case getGenreData
 }
 
 extension EndPoint: EndPointProtocol {
     var baseUrl: String {
-        return "https://api.themoviedb.org/3/movie/"
+        return "https://api.themoviedb.org"
     }
     
     var apiKey: String {
@@ -50,16 +51,19 @@ extension EndPoint: EndPointProtocol {
         switch self {
         case .getMovieData: return .get
         case .getDetailData: return .get
+        case .getGenreData: return .get
         }
     }
     
     var path: String {
         
-        let apiMustPath: String = "/3/movie/"
+        let apiMoviePath: String = "/3/movie/"
+        let apiGenrePath: String = "/3/genre/"
         
         switch self {
-        case .getMovieData(let movieType, _): return apiMustPath + "\(movieType)"
-        case .getDetailData(let id, _): return apiMustPath + "\(id)"
+        case .getMovieData(let movieType, _): return apiMoviePath + "\(movieType)"
+        case .getDetailData(let id, _): return apiMoviePath + "\(id)"
+        case .getGenreData: return apiGenrePath + "movie/list"
         }
     }
     
@@ -90,6 +94,8 @@ extension EndPoint: EndPointProtocol {
             components.queryItems = [URLQueryItem(name: "api_key", value: apiKey),
                                      URLQueryItem(name: "language", value: "en-US"),
                                      URLQueryItem(name: "page", value: page)]
+        } else if case .getGenreData = self {
+            components.queryItems = [URLQueryItem(name: "api_key", value: apiKey)]
         }
         
         // Create Request

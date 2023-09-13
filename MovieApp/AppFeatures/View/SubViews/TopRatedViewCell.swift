@@ -63,7 +63,7 @@ extension TopRatedViewCell {
     
     private func numberLabelConst() {
         numberLabel.snp.makeConstraints { make in
-            make.centerX.equalTo(contentView.safeAreaLayoutGuide.snp.leading)
+            make.centerX.equalTo(contentView.safeAreaLayoutGuide.snp.leading).offset(15)
             make.bottom.equalTo(contentView.safeAreaLayoutGuide.snp.bottom).offset(15)
         }
     }

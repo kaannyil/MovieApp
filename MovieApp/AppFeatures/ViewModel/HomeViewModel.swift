@@ -17,8 +17,13 @@ protocol HomeViewModelInterfaces {
     func viewDidLoad()
 }
 
+var allMoviesUpdated = [MovieInfo]()
+var currentPage = 1
+
 class HomeViewModel: HomeViewModelInterfaces {
+    
     var model: MovieData?
+    var genreModel: GenreData?
     var view: HomeView?
     
     var homeViewOutPut : HomeViewOutPut?
@@ -48,9 +53,40 @@ class HomeViewModel: HomeViewModelInterfaces {
         }
     }
     
-    func fetchPopularMovies() {
+    func fetchPopularMovies(page: Int = 1, allMovies: [MovieInfo] = []) {
         NetworkManager.shared.getMovieData(movieType: MovieType.popular.rawValue,
-                                           page: "1") { [weak self] result in
+                                           page: "\(currentPage)") { [weak self] result in
+            guard let self = self else {
+                return
+            }
+            
+            switch result {
+            case .success(let success):
+                
+                if currentPage <= 5 {
+                    allMoviesUpdated.append(contentsOf: success.results)
+                    
+                    DispatchQueue.main.async {
+                        self.homeViewOutPut?.saveMovies(movieType: .popularMovies,
+                                                        list: allMoviesUpdated)
+                        // self.model = success
+                        // self.view?.popularCollectionView.reloadData()
+                    }
+                    
+                    currentPage += 1
+                    print(allMoviesUpdated.count)
+                    
+                    fetchPopularMovies(page: currentPage, allMovies: allMoviesUpdated)
+                }
+            case .failure(let failure):
+                print(failure)
+            }
+            
+        }
+    }
+    
+    func fetchGenreData() {
+        NetworkManager.shared.getGenreData { [weak self] result in
             guard let self = self else {
                 return
             }
@@ -58,15 +94,11 @@ class HomeViewModel: HomeViewModelInterfaces {
             switch result {
             case .success(let success):
                 DispatchQueue.main.async {
-                    self.homeViewOutPut?.saveMovies(movieType: .popularMovies,
-                                                    list: success.results)
-                    // self.model = success
-                    // self.view?.popularCollectionView.reloadData()
+                    self.genreModel = success
                 }
             case .failure(let failure):
                 print(failure)
             }
-            
         }
     }
     
@@ -92,5 +124,6 @@ class HomeViewModel: HomeViewModelInterfaces {
     func fetchData() {
         fetchTopRatedMovies()
         fetchPopularMovies()
+        fetchGenreData()
     }
 }

@@ -68,9 +68,9 @@ class WatchListViewCell: UICollectionViewCell {
 extension WatchListViewCell {
     private func makeImageConst() {
         imageView.snp.makeConstraints { make in
-            let sizeWidth = contentView.bounds.width
+            let sizeHeight = contentView.bounds.height
             make.leading.top.bottom.equalToSuperview()
-            make.width.equalTo(sizeWidth/3)
+            make.width.equalTo(sizeHeight/1.3636)
         }
     }
     

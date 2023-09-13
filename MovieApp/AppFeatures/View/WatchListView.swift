@@ -22,6 +22,7 @@ class WatchListView: UIViewController {
     
     let watchListCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
+        layout.sectionInset = UIEdgeInsets(top: 50, left: 0, bottom: 50, right: 0)
         layout.scrollDirection = .vertical
         let sizeHeight = UIScreen.main.bounds.height
         let sizeWidth = UIScreen.main.bounds.width
@@ -58,20 +59,31 @@ extension WatchListView: WatchListViewInterfaces {
         title = "Watch List"
         
         view.backgroundColor = UIColor(named: "system_background_color")
+        // navigationController?.navigationBar.backgroundColor = .white
         
         navigationController?.navigationBar.titleTextAttributes = titleAttributes
         
+        
+        navigationController?.navigationBar.barTintColor = view.backgroundColor
+        navigationController?.navigationBar.backgroundColor = view.backgroundColor
+        
+        
+        delegates()
+        watchListConst()
+    }
+}
+
+// MARK: - Delegates
+extension WatchListView {
+    private func delegates() {
         watchListCollectionView.delegate = self
         watchListCollectionView.dataSource = self
-        
-        watchListConst()
     }
 }
 
 // MARK: - CollectionView
 extension WatchListView: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        // return 5
         return  viewModel.favArr.count
     }
     
@@ -88,7 +100,6 @@ extension WatchListView: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let id = viewModel.favArr[indexPath.item].id
         viewModel.segueToDetails(movieID: id)
-        // viewModel.didSelectItemAt()
     }
 }
 
@@ -98,7 +109,7 @@ extension WatchListView {
         watchListCollectionView.snp.makeConstraints { make in
             make.leading.equalTo(view.safeAreaLayoutGuide.snp.leading).offset(10)
             make.trailing.equalTo(view.safeAreaLayoutGuide.snp.trailing).offset(-10)
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(10)
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
         }
     }

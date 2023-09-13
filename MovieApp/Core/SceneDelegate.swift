@@ -26,7 +26,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         // Create a splash view controller
         let splashViewController = UIViewController()
-        let splashImageView = UIImageView(image: UIImage(named: "splash_image"))
+        let splashImageView = UIImageView(image: UIImage(named: "splash_image2"))
         splashImageView.contentMode = .scaleAspectFill
         splashViewController.view.addSubview(splashImageView)
         

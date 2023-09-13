@@ -60,4 +60,10 @@ extension NetworkManager {
         
         request(endPoint, completion: completion)
     }
+    
+    func getGenreData(completion: @escaping (Result<GenreData, ErrorTypes>) -> Void) {
+        let endPoint = EndPoint.getGenreData
+        
+        request(endPoint, completion: completion)
+    }
 }
