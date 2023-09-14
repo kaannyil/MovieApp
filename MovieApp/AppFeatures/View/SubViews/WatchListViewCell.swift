@@ -50,15 +50,13 @@ class WatchListViewCell: UICollectionViewCell {
         makeFilmLengthConst()
     }
     
-    public func configCell(movieDetail: MovieDetail, isFavedMovie: Bool) {
+    func configCell(movieDetail: MovieDetail, isFavedMovie: Bool) {
         
         let genres = movieDetail.genres
         imageView.uploadImage(posterPath: movieDetail.posterPath)
         nameLabel.text = movieDetail.title
         ratingStarLabel.text = "Rating : \(String(format: "%0.1f", movieDetail.voteAverage))"
-        
         if !genres.isEmpty { genreLabel.text = "Genre: \(genres[0].name)" }
-        
         releaseLabel.text = "Release Date: \(movieDetail.releaseDate)"
         filmLengthLabel.text = "Minutes: \(String(movieDetail.runtime))"
     }

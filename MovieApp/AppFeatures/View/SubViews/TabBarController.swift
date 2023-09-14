@@ -9,6 +9,11 @@ import UIKit.UITabBar
 
 class TabBarController: UITabBarController {
 
+    let titleAttributes: [NSAttributedString.Key: Any] = [
+        .foregroundColor: UIColor.white,
+        .font: UIFont.boldSystemFont(ofSize: 18)
+    ]
+    
     override func viewDidLoad() {
         super.viewDidLoad()
             
@@ -37,16 +42,15 @@ class TabBarController: UITabBarController {
         let navigationBarAppearance = UINavigationBarAppearance()
         // navigationBarAppearance.configureWithOpaqueBackground()
         navigationBarAppearance.backgroundColor = UIColor(named: "system_background_color")
+        navigationBarAppearance.titleTextAttributes = titleAttributes
         UINavigationBar.appearance().scrollEdgeAppearance = navigationBarAppearance
         UINavigationBar.appearance().standardAppearance = navigationBarAppearance
         UINavigationBar.appearance().compactAppearance = navigationBarAppearance
-        
         
         tabBarLine()
     }
 }
 extension TabBarController {
-
     private func tabBarLine() {
         let separatorLine = UIView()
         separatorLine.backgroundColor = .systemBlue

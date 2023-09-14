@@ -28,11 +28,10 @@ class CoreDataManager {
             entityDescription.setValue(model.releaseDate, forKey: "releaseDate")
             entityDescription.setValue(model.runtime, forKey: "runtime")
             entityDescription.setValue(model.overview, forKey: "overview")
-            // For Genre
             
+            // For Genre
             entityDescription.setValue(genres.id, forKey: "genresID")
             entityDescription.setValue(genres.name, forKey: "genresName")
-            // print("Save Item ID: \(genres.id)\nSave Item Name \(genres.name)")
             
             do {
                 try context.save()
@@ -50,7 +49,6 @@ class CoreDataManager {
             
             let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "MoviesData")
             fetchRequest.returnsObjectsAsFaults = false
-            
             fetchRequest.predicate = NSPredicate(format: "id = %@", "\(dataID)")
             
             do {
@@ -94,7 +92,6 @@ class CoreDataManager {
                         let firstGenre = Genre(id: genresID, name: genresName)
                         genreArray.append(firstGenre)
                     }
-                    // print("GenresID: \(), GenresName: \(genresName)")
                     detailArray.append(MovieDetail(id: result.value(forKey: "id") as! Int,
                                                    backDropPath: result.value(forKey: "backDropPath")
                                                    as! String,
@@ -116,7 +113,7 @@ class CoreDataManager {
                 }
                 completion(.success(detailArray))
             } catch {
-                
+                print("Core Data Fetch Error !")
             }
         }
     }

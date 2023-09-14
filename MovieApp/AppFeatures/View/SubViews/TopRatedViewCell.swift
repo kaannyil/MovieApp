@@ -46,9 +46,8 @@ class TopRatedViewCell: UICollectionViewCell {
                                                                attributes: strokeTextAttributes)
     }
     
-    public func configCell(movie: MovieInfo, _ indexpath: IndexPath) {
+    func configCell(movie: MovieInfo, _ indexpath: IndexPath) {
         configNumberLabel(itemIndex: String(indexpath.item + 1))
-        // imageView.image = UIImage(named: "movie")
         imageView.uploadImage(posterPath: movie.posterPath)
     }
 }
@@ -63,7 +62,7 @@ extension TopRatedViewCell {
     
     private func numberLabelConst() {
         numberLabel.snp.makeConstraints { make in
-            make.centerX.equalTo(contentView.safeAreaLayoutGuide.snp.leading).offset(15)
+            make.leading.equalTo(contentView.safeAreaLayoutGuide.snp.leading).offset(-15)
             make.bottom.equalTo(contentView.safeAreaLayoutGuide.snp.bottom).offset(15)
         }
     }

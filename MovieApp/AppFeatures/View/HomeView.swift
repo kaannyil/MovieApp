@@ -24,6 +24,7 @@ class HomeView: UIViewController {
     var topRatedMovieList: [MovieInfo] = []
     var popularMovieList: [MovieInfo] = []
     var resultSearch: [MovieInfo] = []
+    var resultResetList: [MovieInfo] = []
     var resetMovieList: [MovieInfo] = []
     
     private var isSearching = false
@@ -124,7 +125,6 @@ extension HomeView: HomeViewInterfaces {
         
         title = "Home"
         view.backgroundColor = UIColor(named: "system_background_color")
-        navigationController?.navigationBar.titleTextAttributes = titleAttributes
         
         // Search Bar PlaceHolder Color
         searchBar.searchTextField.attributedPlaceholder =
@@ -193,24 +193,6 @@ extension HomeView: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView,
                         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        /* let section = collectionCells[indexPath.section]
-        
-        switch section.cellType {
-        case .topRatedMovies:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TopRatedViewCell.identifier, for: indexPath) as! TopRatedViewCell
-            
-            let movie = self.topRatedMovieList[indexPath.item]
-            cell.configCell(movie: movie, indexPath)
-            return cell
-            
-        case .popularMovies:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FilmsViewCell.identifier, for: indexPath) as! FilmsViewCell
-            
-            let movie = self.popularMovieList[indexPath.item]
-            cell.configCell(movie: movie)
-            return cell
-        } */
-        
         if collectionView == topRatedCollectionView {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TopRatedViewCell.identifier,
                                                                 for: indexPath) as? TopRatedViewCell else {
@@ -222,7 +204,6 @@ extension HomeView: UICollectionViewDataSource, UICollectionViewDelegate {
             return cell
             
         } else if collectionView == popularCollectionView {
-            
             let movie: MovieInfo
             
             if isSearching {
@@ -235,7 +216,6 @@ extension HomeView: UICollectionViewDataSource, UICollectionViewDelegate {
                 return UICollectionViewCell()
             }
              
-            // let movie = popularMovieList[indexPath.item]
             cell.configCell(movie: movie)
             return cell
             
@@ -275,7 +255,8 @@ extension HomeView: UISearchBarDelegate {
                 result.title.lowercased().contains(searchText.lowercased())
                 return containSearchText
             }
-            // print(resultSearch.count)
+            resultResetList = resultSearch
+            print(resultSearch.count)
         }
         DispatchQueue.main.async {
             self.popularCollectionView.reloadData()
@@ -300,49 +281,65 @@ extension HomeView {
                                                 message: nil,
                                                 preferredStyle: .actionSheet)
         
-        if isSearching {
-            
-        } else {
-            for (index, genre) in networkGenreArray.enumerated() {
-                let action = UIAlertAction(title: genre, style: .default) { _ in
-                    self.navigationItem.rightBarButtonItem =
-                    UIBarButtonItem(title: "\(genre)",
-                                    style:  .done,
-                                    target: self,
-                                    action: #selector(self.filterButtonTapped))
-                    
-                    self.popularMovieList = self.resetMovieList
-                    // self.resultSearch = self.resetMovieList
+        for (index, genre) in networkGenreArray.enumerated() {
+            let action = UIAlertAction(title: genre, style: .default) { _ in
+                self.navigationItem.rightBarButtonItem =
+                UIBarButtonItem(title: "\(genre)",
+                                style:  .done,
+                                target: self,
+                                action: #selector(self.filterButtonTapped))
+                
+                self.popularMovieList = self.resetMovieList
+                self.resultSearch = self.resultResetList
+                print("ResultReset: \(self.resultResetList.count)")
+                
+                if self.isSearching {
+                    // self.resultSearch = self.resultResetList
+                    // self.popularMovieList = self.resultSearch
                     
                     if let genreArray = self.viewModel.genreModel?.genres {
-                        let filterMovies = self.filterMoviesByGenre(
-                            genreID: genreArray[index].id ?? 0)
                         
+                        let filterMovies =
+                        self.popularMovieListFilter(genreID: genreArray[index].id ?? 0)
+                        let isSearchingFilterMovies =
+                        self.resultSearchingFilter(genreID: genreArray[index].id ?? 0)
+                        
+                        print(isSearchingFilterMovies.count)
                         self.popularMovieList = filterMovies
-                        self.resultSearch = filterMovies
+                        self.resultSearch = isSearchingFilterMovies
                         
-                        print(genreArray[index].id!)
+                        DispatchQueue.main.async {
+                            self.popularCollectionView.reloadData()
+                        }
+                    }
+                } else {
+                 
+                    if let genreArray = self.viewModel.genreModel?.genres {
+                        let filterMovies =
+                        self.popularMovieListFilter(genreID: genreArray[index].id ?? 0)
+                        print(filterMovies.count)
+                        self.popularMovieList = filterMovies
                         
                         DispatchQueue.main.async {
                             self.popularCollectionView.reloadData()
                         }
                     }
                 }
-                
-                alertController.addAction(action)
             }
             
-            let resetAction = UIAlertAction(title: "Reset", style: .cancel) { _ in
-                self.navigationItem.rightBarButtonItem =
-                UIBarButtonItem(title: "Filter",
-                                style: .done,
-                                target: self,
-                                action: #selector(self.filterButtonTapped))
-                self.resetMoviesByGenre()
-            }
-            
-            alertController.addAction(resetAction)
+            alertController.addAction(action)
         }
+        
+        let resetAction = UIAlertAction(title: "Reset", style: .cancel) { _ in
+            self.navigationItem.rightBarButtonItem =
+            UIBarButtonItem(title: "Filter",
+                            style: .done,
+                            target: self,
+                            action: #selector(self.filterButtonTapped))
+            self.resetMoviesByGenre()
+        }
+        
+        alertController.addAction(resetAction)
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .destructive)
     
@@ -350,14 +347,41 @@ extension HomeView {
         present(alertController, animated: true, completion: nil)
     }
     
-    func filterMoviesByGenre(genreID: Int) -> [MovieInfo]{
+    /* func filterMoviesByGenre(genreID: Int) -> [MovieInfo]{
+        if isSearching {
+            print("isSearching Filter")
+            return resultSearch.filter { $0.genreIDs[0] == genreID}
+        } else {
+            print("Just Filter")
+            return popularMovieList.filter { $0.genreIDs[0] == genreID}
+        }
+    } */
+    
+    func popularMovieListFilter(genreID: Int) -> [MovieInfo] {
+        print("isSearching Filter.")
         return popularMovieList.filter { $0.genreIDs[0] == genreID}
     }
+    
+    func resultSearchingFilter(genreID: Int) -> [MovieInfo] {
+        print("Just Filter")
+        return resultSearch.filter { $0.genreIDs[0] == genreID}
+    }
+    
     func resetMoviesByGenre() {
-        popularMovieList = resetMovieList
-        
-        DispatchQueue.main.async {
-            self.popularCollectionView.reloadData()
+        if isSearching {
+            popularMovieList = resetMovieList
+            resultSearch = resultResetList
+            print(resultSearch.count)
+            
+            DispatchQueue.main.async {
+                self.popularCollectionView.reloadData()
+            }
+        } else {
+            popularMovieList = resetMovieList
+            print(popularMovieList.count)
+            DispatchQueue.main.async {
+                self.popularCollectionView.reloadData()
+            }
         }
     }
 }

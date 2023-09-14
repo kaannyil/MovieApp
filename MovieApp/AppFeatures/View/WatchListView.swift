@@ -56,20 +56,12 @@ extension WatchListView: WatchListViewInterfaces {
     func prepare() {
         view.addSubview(watchListCollectionView)
         
+        watchListConst()
+        
         title = "Watch List"
-        
         view.backgroundColor = UIColor(named: "system_background_color")
-        // navigationController?.navigationBar.backgroundColor = .white
-        
-        navigationController?.navigationBar.titleTextAttributes = titleAttributes
-        
-        
-        navigationController?.navigationBar.barTintColor = view.backgroundColor
-        navigationController?.navigationBar.backgroundColor = view.backgroundColor
-        
         
         delegates()
-        watchListConst()
     }
 }
 
@@ -105,7 +97,7 @@ extension WatchListView: UICollectionViewDelegate, UICollectionViewDataSource {
 
 // MARK: - Constraints
 extension WatchListView {
-    func watchListConst() {
+    private func watchListConst() {
         watchListCollectionView.snp.makeConstraints { make in
             make.leading.equalTo(view.safeAreaLayoutGuide.snp.leading).offset(10)
             make.trailing.equalTo(view.safeAreaLayoutGuide.snp.trailing).offset(-10)

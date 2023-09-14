@@ -18,36 +18,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
-        /* window = UIWindow(frame: windowScene.coordinateSpace.bounds)
-        window?.windowScene = windowScene
-        window?.rootViewController = TabBarController()
-        
-        window?.makeKeyAndVisible() */
-        
         // Create a splash view controller
         let splashViewController = UIViewController()
         let splashImageView = UIImageView(image: UIImage(named: "splash_image2"))
-        splashImageView.contentMode = .scaleAspectFill
-        splashViewController.view.addSubview(splashImageView)
         
         window = UIWindow(frame: windowScene.coordinateSpace.bounds)
         window?.windowScene = windowScene
         window?.rootViewController = splashViewController
+        window?.makeKeyAndVisible()
         
-        // Customize the splash view controller as needed
-        // For example, you can add a background color or other UI elements
+        splashViewController.view.addSubview(splashImageView)
+        splashViewController.view.frame = windowScene.coordinateSpace.bounds
+        splashViewController.view.backgroundColor = UIColor(named: "system_background_color")
         
-        // Set the splash view controller as the root view controller
-        window?.rootViewController = splashViewController
-        // window?.makeKeyAndVisible()
+        splashImageView.frame = splashViewController.view.bounds
+        splashImageView.contentMode = .center
         
-        // Simulate a delay for the splash screen
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-    
-            // self.window = UIWindow(frame: windowScene.coordinateSpace.bounds)
-            // self.window?.windowScene = windowScene
             self.window?.rootViewController = TabBarController()
-            
             self.window?.makeKeyAndVisible()
         }
     }

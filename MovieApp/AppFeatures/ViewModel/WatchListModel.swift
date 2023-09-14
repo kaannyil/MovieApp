@@ -26,7 +26,7 @@ class WatchListViewModel: WatchListViewModelInterfaces {
         fetchWatchListData()
     }
     
-    private func fetchWatchListData() {
+    func fetchWatchListData() {
         CoreDataManager.shared.getDataToWatchList { [weak self] result in
             guard let self = self else {
                 return
@@ -65,14 +65,5 @@ class WatchListViewModel: WatchListViewModelInterfaces {
                 print(failure)
             }
         }
-    }
-    
-    func didSelectItemAt() {
-        let detailsView = DetailsView()
-        detailsView.backGroundImage.image = UIImage(named: "movie2_background")
-        detailsView.foreGroundImage.image = UIImage(named: "movie2")
-        detailsView.nameLabel.text = "Spiderman"
-        detailsView.aboutMovieDetailLabel.text = "From DC Comics comes the Suicide Squad, an antihero team of incarcerated supervillains who act as deniable assets for the United States government, undertaking high-risk black ops missions in exchange for commuted prison sentences."
-        view?.navigationController?.pushViewController(detailsView, animated: true)
     }
 }

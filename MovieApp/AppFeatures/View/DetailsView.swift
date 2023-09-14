@@ -15,7 +15,6 @@ protocol DetailsViewInterfaces {
 class DetailsView: UIViewController {
     
     var viewModel = DetailsViewModel()
-    // var movieDetail: MovieDetail?
     var isFaved: Bool?
 
     let backGroundImage: UIImageView = {
@@ -27,7 +26,6 @@ class DetailsView: UIViewController {
     }()
     
     let foreGroundImage = MyImage(frame: .zero)
-    
     let nameLabel = MyLabel(color: .white, fontSettings: .boldSystemFont(ofSize: 22),
                             numberLines: 2)
     private let aboutMovieLabel = MyLabel(color: .white, fontSettings: .boldSystemFont(ofSize: 18),
@@ -40,7 +38,6 @@ class DetailsView: UIViewController {
     
         viewModel.view = self
         viewModel.viewDidLoad()
-        
         viewModel.fetchWatchListData()
         
         configValues(isFavedMovie: false)
@@ -77,7 +74,6 @@ extension DetailsView: DetailsViewInterfaces {
         foreGroundImage.layer.cornerRadius = 20
         foreGroundImage.layer.borderWidth = 2
         foreGroundImage.layer.borderColor = UIColor(named: "system_blue")?.cgColor
-        
         
         aboutMovieLabel.text = "About Movie"
         

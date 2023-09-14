@@ -31,13 +31,13 @@ class NetworkManager {
             self.handleResponse(data: data) { response in
                 completion(response)
             }
-            
         }
-        
         task.resume()
     }
     
-    func handleResponse <T: Codable>(data: Data, completion: @escaping (Result<T, ErrorTypes>) -> ()) {
+    // File Private, bulunduğu dosyaya özel ama içerisindeki
+    // diğer class/struct tarafından kullanılabilir.
+    fileprivate func handleResponse <T: Codable>(data: Data, completion: @escaping (Result<T, ErrorTypes>) -> ()) {
         do {
             let successData = try JSONDecoder().decode(T.self, from: data)
             completion(.success(successData))
@@ -51,19 +51,16 @@ class NetworkManager {
 extension NetworkManager {
     func getMovieData(movieType: String, page: String, completion: @escaping (Result<MovieData, ErrorTypes>) -> Void) {
         let endPoint = EndPoint.getMovieData(MovieType: movieType, page: page)
-        
         request(endPoint, completion: completion)
     }
     
     func getDetailData(id: Int, page: String, completion: @escaping (Result<MovieDetail, ErrorTypes>) -> Void) {
         let endPoint = EndPoint.getDetailData(id: id, page: page)
-        
         request(endPoint, completion: completion)
     }
     
     func getGenreData(completion: @escaping (Result<GenreData, ErrorTypes>) -> Void) {
         let endPoint = EndPoint.getGenreData
-        
         request(endPoint, completion: completion)
     }
 }

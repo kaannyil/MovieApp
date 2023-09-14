@@ -5,9 +5,6 @@
 //  Created by Kaan Yıldırım on 6.09.2023.
 //
 
-import Foundation
-
-
 struct MovieData: Codable {
     var page: Int
     let results: [MovieInfo]

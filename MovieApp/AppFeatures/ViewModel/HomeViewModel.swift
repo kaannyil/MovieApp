@@ -25,7 +25,6 @@ class HomeViewModel: HomeViewModelInterfaces {
     var model: MovieData?
     var genreModel: GenreData?
     var view: HomeView?
-    
     var homeViewOutPut : HomeViewOutPut?
     
     func viewDidLoad() {
@@ -44,8 +43,6 @@ class HomeViewModel: HomeViewModelInterfaces {
                 DispatchQueue.main.async {
                     self.homeViewOutPut?.saveMovies(movieType: .topRatedMovies,
                                                     list: success.results)
-                    // self.model = success
-                    // self.view?.topRatedCollectionView.reloadData()
                 }
             case .failure(let failure):
                 print(failure)
@@ -69,8 +66,6 @@ class HomeViewModel: HomeViewModelInterfaces {
                     DispatchQueue.main.async {
                         self.homeViewOutPut?.saveMovies(movieType: .popularMovies,
                                                         list: allMoviesUpdated)
-                        // self.model = success
-                        // self.view?.popularCollectionView.reloadData()
                     }
                     
                     currentPage += 1
@@ -81,7 +76,6 @@ class HomeViewModel: HomeViewModelInterfaces {
             case .failure(let failure):
                 print(failure)
             }
-            
         }
     }
     
