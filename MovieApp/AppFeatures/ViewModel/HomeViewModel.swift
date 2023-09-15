@@ -67,9 +67,7 @@ class HomeViewModel: HomeViewModelInterfaces {
                         self.homeViewOutPut?.saveMovies(movieType: .popularMovies,
                                                         list: allMoviesUpdated)
                     }
-                    
                     currentPage += 1
-                    print(allMoviesUpdated.count)
                     
                     fetchPopularMovies(page: currentPage, allMovies: allMoviesUpdated)
                 }

@@ -58,12 +58,12 @@ extension EndPoint: EndPointProtocol {
     var path: String {
         
         let apiMoviePath: String = "/3/movie/"
-        let apiGenrePath: String = "/3/genre/"
+        let apiGenrePath: String = "/3/genre/movie/list"
         
         switch self {
         case .getMovieData(let movieType, _): return apiMoviePath + "\(movieType)"
         case .getDetailData(let id, _): return apiMoviePath + "\(id)"
-        case .getGenreData: return apiGenrePath + "movie/list"
+        case .getGenreData: return apiGenrePath
         }
     }
     
@@ -74,7 +74,6 @@ extension EndPoint: EndPointProtocol {
     }
     
     var parameters: [String : Any]? {
-        
         return nil
     }
     

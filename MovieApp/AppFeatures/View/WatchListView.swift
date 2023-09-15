@@ -45,7 +45,7 @@ class WatchListView: UIViewController {
         viewModel.viewDidLoad()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
+   override func viewDidAppear(_ animated: Bool) {
         viewModel.viewDidAppear()
         super.viewDidAppear(animated)
     }

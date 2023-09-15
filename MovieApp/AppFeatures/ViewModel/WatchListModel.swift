@@ -20,6 +20,8 @@ class WatchListViewModel: WatchListViewModelInterfaces {
     
     func viewDidLoad() {
         view?.prepare()
+        fetchWatchListData()
+
     }
     
     func viewDidAppear() {
