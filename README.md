@@ -10,5 +10,3 @@ Some Technologies I Used:
 - SnapKit
 - KingFisher
 
-
-file:///Users/kaanyildirim/Desktop/MovieApp_Video_Record.mov
