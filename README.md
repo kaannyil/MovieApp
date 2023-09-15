@@ -10,5 +10,4 @@ Some Technologies I Used:
 - SnapKit
 - KingFisher
 
-
-https://github.com/kaannyil/MovieApp/assets/93593046/26d99607-b423-425b-80c5-40ebe4c8c308
+https://github.com/kaannyil/MovieApp/assets/93593046/1b660f81-d004-4c38-88e5-32d0402b24fe
